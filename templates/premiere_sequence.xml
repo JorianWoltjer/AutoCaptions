@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xmeml>
+<xmeml version="4">
+    <sequence>
+        <duration>{{ settings.duration }}</duration>
+        <rate>
+            <timebase>{{ settings.timebase }}</timebase>
+            <ntsc>false</ntsc>
+        </rate>
+        <name>Captions</name>
+        <media>
+            <video>
+                <format>
+                    <samplecharacteristics>
+                        <rate>
+                            <timebase>{{ settings.timebase }}</timebase>
+                            <ntsc>false</ntsc>
+                        </rate>
+                        <width>{{ settings.width }}</width>
+                        <height>{{ settings.height }}</height>
+                        <anamorphic>false</anamorphic>
+                        <pixelaspectratio>square</pixelaspectratio>
+                        <fielddominance>none</fielddominance>
+                        <colordepth>24</colordepth>
+                    </samplecharacteristics>
+                </format>
+                <track>
+                    {% for clipitem in clips %}
+                    <clipitem id="clipitem-{{ loop.index0 }}">
+                        <masterclipid>masterclip-{{ loop.index0 }}</masterclipid>
+                        <name>Graphic</name>
+                        <enabled>true</enabled>
+                        <rate>
+                            <timebase>{{ settings.timebase }}</timebase>
+                            <ntsc>false</ntsc>
+                        </rate>
+                        <start>{{ clipitem.start }}</start>
+                        <end>{{ clipitem.end }}</end>
+                        <alphatype>none</alphatype>
+                        <pixelaspectratio>square</pixelaspectratio>
+                        <anamorphic>false</anamorphic>
+                        <file id="file-{{ loop.index0 }}">
+                            <name>Graphic</name>
+                            <mediaSource>GraphicAndType</mediaSource>
+                            <media>
+                                <video>
+                                    <samplecharacteristics>
+                                        <width>{{ settings.width }}</width>
+                                        <height>{{ settings.height }}</height>
+                                        <anamorphic>false</anamorphic>
+                                        <pixelaspectratio>square</pixelaspectratio>
+                                        <fielddominance>none</fielddominance>
+                                    </samplecharacteristics>
+                                </video>
+                            </media>
+                        </file>
+                        <filter>
+                            <effect>
+                                <name>{{ clipitem.name }}</name>
+                                <effectid>GraphicAndType</effectid>
+                                <effectcategory>graphic</effectcategory>
+                                <effecttype>filter</effecttype>
+                                <pproBypass>false</pproBypass>
+                                <parameter authoringApp="PremierePro">
+                                    <parameterid>1</parameterid>
+                                    <name>Source Text</name>
+                                    <value>{{ clipitem.data }}</value>
+                                </parameter>
+                                <parameter authoringApp="PremierePro">
+                                    <parameterid>3</parameterid>
+                                    <name>Position</name>
+                                    <IsTimeVarying>false</IsTimeVarying>
+                                    <value>0,0.5:0.8240740740740741,0,0,0,0,0,0,0,0,0,0,0,0</value>
+                                </parameter>
+                            </effect>
+                        </filter>
+                    </clipitem>
+                    {% endfor %}
+                </track>
+            </video>
+        </media>
+    </sequence>
+    <marker></marker>
+</xmeml>

@@ -1,0 +1,6 @@
+rich
+Jinja2
+pysrt
+
+setuptools-rust
+git+https://github.com/openai/whisper.git
