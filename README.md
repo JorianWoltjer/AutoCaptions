@@ -11,6 +11,8 @@ git clone https://github.com/JorianWoltjer/transcribe-to-premiere.git && cd tran
 pip install -r requirements.txt
 ```
 
+> **Warning**: The installation is not thoroughly tested, so let me know if any problems arise by creating an [Issue](https://github.com/JorianWoltjer/transcribe-to-premiere/issues) for example. 
+
 ### Torch
 
 Make sure to install the GPU enabled version of `torch` to make Whisper faster:
