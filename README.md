@@ -2,7 +2,7 @@
 
 A GUI tool that uses OpenAIs [Whisper](https://github.com/openai/whisper) to transcribe text from an audio/video file, into a Premiere Pro sequence to automate the creation of subtitles. 
 
-Outputs a `.xml` file which is a sequence containing text layers that can be imported into your Premiere Pro project. 
+Outputs a `.xml` file which is a sequence containing text layers (Essential Graphics) that can be imported into your Premiere Pro project. 
 
 ## Installation
 
@@ -55,3 +55,13 @@ Simply create a shortcut to [`start.bat`](start.bat)
 ```shell
 $ python3 main.py
 ```
+
+## Example
+
+Start the batch script, and select a file as input:
+
+![A terminal showing Whisper output and some progress updates, with the simple GUI on Windows](img/terminal_example.png)
+
+The resulting XML file can then be imported into a Premiere project, where you can use and edit the text layers it created:
+
+![A screenshot of the Premiere Pro timeline showing 3 text layers with the transcribed text](img/premiere_example.png)
