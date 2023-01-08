@@ -3,9 +3,9 @@ from rich.console import Console
 console = Console()
 
 class log:
-    def info(*args, **kwargs):
+    def progress(*args, **kwargs):
         """Print an informational message prefixed with `[*]`"""
-        console.print(r"\[[bright_blue]*[/bright_blue]]", *args, **kwargs)
+        console.print(r"\[[bright_blue]~[/bright_blue]]", *args, **kwargs)
 
     def success(*args, **kwargs):
         """Print a successful message prefixed with `[+]`"""
@@ -22,7 +22,7 @@ class log:
 
 
 if __name__ == "__main__":
-    log.info("Some information.")
+    log.progress("Some information.")
     log.success("Success! We did it!")
     log.warning("Be warned...")
     log.error("Oh no, an error!")

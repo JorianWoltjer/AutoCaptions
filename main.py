@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))  # Allow local imports from any working directory
 from log import console, log
 
-log.info("Loading modules...")
+log.progress("Loading modules...")
 
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -24,7 +24,7 @@ root.title('Transcribe Audio to Premiere Pro XML')
 def select_file():
     filetypes = [
         ("Audio Files", "*.wav;*.mp3;*.flac;*.aac;*.m4a"),
-        ("Video Files", "*.mp4;*.mov*;.avi;*.mkv;*.wmv"),
+        ("Video Files", "*.mp4;*.mov;*.avi;*.mkv;*.wmv"),
         ('All files', '*.*')
     ]
 
@@ -49,9 +49,9 @@ def file_save():
     filename = path.stem + ".xml"
     
     f = filedialog.asksaveasfile(mode='w', title="Save sequence file", filetypes=filetypes, initialdir=directory, initialfile=filename)
-    f.close()
     if f is None:  # if dialog closed with cancel
         return
+    f.close()
     
     input_filepath = text_label.get()
     
@@ -97,5 +97,5 @@ ttk.Label(textvariable=text_label).pack(anchor="center", pady=(15, 0))
 convert_button = ttk.Button(text='Transcribe to XML', command=file_save, state=DISABLED)
 convert_button.pack(pady=15)
 
-log.info("Starting GUI")
+log.progress("Starting GUI")
 root.mainloop()
