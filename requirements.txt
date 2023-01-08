@@ -4,3 +4,4 @@ pysrt
 
 setuptools-rust
 git+https://github.com/openai/whisper.git
+git+https://github.com/jianfch/stable-ts.git

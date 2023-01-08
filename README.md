@@ -65,3 +65,12 @@ Start the batch script, and select a file as input:
 The resulting XML file can then be imported into a Premiere project, where you can use and edit the text layers it created:
 
 ![A screenshot of the Premiere Pro timeline showing 3 text layers with the transcribed text](img/premiere_example.png)
+
+## TODO
+
+* Smaller subtitle chunks
+  * Use https://github.com/jianfch/stable-ts to get idividual timestamps per word
+    * See https://github.com/openai/whisper/discussions/3#discussioncomment-3730914
+  * Split based on timestamp (max length before new cut)
+  * Make an algorithm that starts at 0:00, then to 0:02 and CUT at end of that word. 
+    Start again at next word (0:04) and go to (0:06) and CUT at end of that word. REPEAT until done

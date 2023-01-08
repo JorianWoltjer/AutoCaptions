@@ -1,14 +1,17 @@
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))  # Allow local imports from any working directory
+from log import console, log
+
+log.info("Loading modules...")
+
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import ACTIVE, DISABLED, filedialog
 from pathlib import Path
-import os
 import subprocess
-import sys
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))  # Allow local imports from any working directory
-from log import console, log
 import premiere_convert
+from transcribe import transcribe_to_srt
 
 DIR = sys.path[0]
 
@@ -27,7 +30,6 @@ def select_file():
 
     filename_ask = filedialog.askopenfilename(
         title='Select any Audio or Video file to be transcribed',
-        initialdir='/',
         filetypes=filetypes)
     
     if filename_ask == "":  # if dialog closed with cancel
@@ -54,12 +56,12 @@ def file_save():
     input_filepath = text_label.get()
     
     convert_button["state"] = DISABLED
-    text_label.set("Transcribing... (see console for progress)")
+    text_label.set("Running... (see console for progress)")
     root.update()
 
     # Transcribe audio using Whisper
-    srt_filepath = transcribe(input_filepath)
-    
+    srt_filepath = transcribe_to_srt(input_filepath)
+
     # Convert SRT to Premiere XML text layers
     srt_to_xml(srt_filepath, f.name)
     
@@ -68,23 +70,6 @@ def file_save():
         open_file_in_explorer(f)
 
     root.destroy()
-
-# Convert audio to SRT using Whisper
-def transcribe(filepath):
-    dirname = os.path.dirname(filepath)
-
-    log.info(f"Starting Whisper... (into {dirname})")
-
-    return_code = subprocess.call(["python", "-m", "whisper", filepath, "-o", dirname], cwd=DIR)
-
-    if return_code == 0:
-        srt_filepath = os.path.join(dirname, os.path.basename(filepath) + ".srt")
-        log.success(f"Succesfully transcribed audio! Saved to {srt_filepath}")
-    else:
-        log.error(f"ERROR: Whisper failed with return code {return_code}.")
-    
-    return srt_filepath
-
 
 # Convert SRT to Premiere Pro XML Sequence as Text Layers
 def srt_to_xml(srt_filename, outfile):
@@ -97,7 +82,7 @@ def srt_to_xml(srt_filename, outfile):
         with open(outfile, "w") as f:
             f.write(premiere_xml)
     
-    log.success(f"Saved Premiere Pro XML to {outfile}")
+    log.success(f"Saved Premiere Pro XML to {outfile!r}")
 
 def open_file_in_explorer(f):
     filename = f.name.replace('/', '\\')
