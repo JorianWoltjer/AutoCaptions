@@ -75,9 +75,13 @@ def transcribe_to_srt(filepath):
     
     # Convert format and combine words
     with console.status(f"Finalizing Whisper results...", spinner="arc", spinner_style="blue"):
-        # Format 
+        # Format
         results = list(chain(*[segment["word_timestamps"] for segment in results["segments"]]))
         results = add_start_end_times(results)
+        
+        # # Print temporary results
+        # for i in results:
+        #     print(f"[{i['start']:0.2f} - {i['end']:0.2f}] {i['text']}")
         
         # Post processing
         results = make_whole_words(results)

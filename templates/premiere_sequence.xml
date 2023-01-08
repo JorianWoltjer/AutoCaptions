@@ -7,7 +7,7 @@
             <timebase>{{ settings.timebase }}</timebase>
             <ntsc>false</ntsc>
         </rate>
-        <name>Captions</name>
+        <name>Captions ({{ filename }})</name>
         <media>
             <video>
                 <format>

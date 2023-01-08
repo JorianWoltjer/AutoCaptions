@@ -105,5 +105,7 @@ def srt_to_xml(srt_filename):
         "width": WIDTH,
         "height": HEIGHT
     }
+    
+    filename = os.path.splitext(os.path.basename(srt_filename))[0]
 
-    return template.render(settings=settings, clips=clips)
+    return template.render(settings=settings, clips=clips, filename=filename)
