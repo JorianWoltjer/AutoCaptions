@@ -1,6 +1,6 @@
 from itertools import chain
 import json
-from stable_whisper import load_model, to_srt, transcribe_word_level
+from stable_whisper import load_model, to_srt, transcribe_word_level, finalize_segment_word_ts
 from log import log, console
 
 def add_start_end_times(results):
@@ -17,6 +17,16 @@ def add_start_end_times(results):
         new_results.append(item)
 
     return new_results
+
+def finalize_results(results):
+    # Get start and end timestamps for each word
+    results = finalize_segment_word_ts(results)
+    # Move timestamps to text objects
+    results = [dict(text=j[0], **j[1]) for j in chain.from_iterable(zip(*i) for i in results)]
+    # Round timestamps to 3 decimal places
+    results = [dict(text=j['text'], start=round(j['start'], 3), end=round(j['end'], 3)) for j in results]
+
+    return results
 
 def make_whole_words(results):
     """Sticks whole words together"""
@@ -65,27 +75,26 @@ def combine_close_words(results, time_threshold=1, max_length=20):
 def transcribe_to_srt(filepath):
     # Load model
     with console.status(f"Loading Whisper 'small' model...", spinner="arc", spinner_style="blue"):
-        model = load_model('small')
+        model = load_model('medium')
     log.success("Loaded Whisper model")
     # Start transcribing
     log.progress(f"Transcribing using Whisper (this may take some time)...")
-    
     results = transcribe_word_level(model, filepath, pbar=True)
     log.success("Completed Whisper")
     
     # Convert format and combine words
     with console.status(f"Finalizing Whisper results...", spinner="arc", spinner_style="blue"):
         # Format
-        results = list(chain(*[segment["word_timestamps"] for segment in results["segments"]]))
-        results = add_start_end_times(results)
+        results = finalize_results(results)
         
         # # Print temporary results
         # for i in results:
         #     print(f"[{i['start']:0.2f} - {i['end']:0.2f}] {i['text']}")
         
         # Post processing
+        # TODO: split too long sentences (divide time by length of part in characters, but only split on spaces)
         results = make_whole_words(results)
-        results = combine_close_words(results, time_threshold=0.5)
+        results = combine_close_words(results, time_threshold=1)
         
         srt_filepath = filepath + '.srt'
         to_srt(results, srt_filepath)
