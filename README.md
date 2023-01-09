@@ -1,17 +1,19 @@
-# Transcribe audio to Premiere Pro
+# AutoCaptions
 
-A GUI tool that uses [OpenAI's Whisper](https://github.com/openai/whisper) to transcribe text from an audio/video file, into a Premiere Pro sequence to automate the creation of subtitles. 
+**Transcribe an audio file to Premiere Pro layers**
+
+A GUI tool that uses [OpenAI's Whisper](https://github.com/openai/whisper) to transcribe text from an audio/video file, into a Premiere Pro sequence to automate the creation of subtitles. Mainly for adding quick subtitles to action-packed video's, by making segments of a small word count. 
 
 Outputs a `.xml` file which is a sequence containing text layers (Essential Graphics) that can be imported into your Premiere Pro project. 
 
 ## Installation
 
 ```cmd
-git clone https://github.com/JorianWoltjer/transcribe-to-premiere.git && cd transcribe-to-premiere
+git clone https://github.com/JorianWoltjer/AutoCaptions.git && cd AutoCaptions
 pip install -r requirements.txt
 ```
 
-> **Warning**: The installation is not thoroughly tested, so let me know if any problems arise by creating an [Issue](https://github.com/JorianWoltjer/transcribe-to-premiere/issues) for example. 
+> **Warning**: The installation is not thoroughly tested, so let me know if any problems arise by creating an [Issue](https://github.com/JorianWoltjer/AutoCaptions/issues) for example. 
 
 ### Torch
 

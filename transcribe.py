@@ -111,7 +111,7 @@ def transcribe_to_srt(filepath, model_name='small', max_time=1, max_length=20):
     cached = get_cache(filepath, model_name)
     if cached:
         results = cached
-        log.success("Loaded CACHED Whisper results!")
+        log.success("Loaded [green]CACHED[/green] Whisper results!")
     else:
         # Load model
         log.progress(f"Loading Whisper {model_name!r} model...")
@@ -123,7 +123,7 @@ def transcribe_to_srt(filepath, model_name='small', max_time=1, max_length=20):
         
         put_cache(filepath, model_name, results)
         log.success("Completed Whisper (and saved to cache)")
-        
+    
     # Convert format and combine words
     with console.status(f"Finalizing Whisper results...", spinner="arc", spinner_style="blue"):
         # Format
@@ -137,6 +137,7 @@ def transcribe_to_srt(filepath, model_name='small', max_time=1, max_length=20):
         results = make_words_whole(results)
         results = split_into_words(results)
         results = combine_to_segments(results, max_time=max_time, max_length=max_length)
+        # TODO: maybe use a mask to remove when silent? need to parse wav file
         
         srt_filepath = filepath + '.srt'
         to_srt(results, srt_filepath)
@@ -153,6 +154,6 @@ def transcribe_to_srt(filepath, model_name='small', max_time=1, max_length=20):
         gc.collect()
         torch.cuda.empty_cache()
         if torch.cuda.memory_allocated() > 0:
-            log.warning("WARNING: Memory was not fully cleared. This is a bug! Please report it with some information about your system.")
+            log.warning("[yellow]WARNING[/yellow]: Memory was not fully cleared. This is a bug! Please report it with some information about your system.")
 
     return srt_filepath
