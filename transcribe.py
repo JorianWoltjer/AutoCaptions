@@ -28,7 +28,7 @@ def finalize_results(results):
 
     return results
 
-def make_whole_words(results):
+def make_words_whole(results):
     """Sticks whole words together"""
     new_results = []
     for i in results:
@@ -40,7 +40,20 @@ def make_whole_words(results):
     
     return new_results
 
-def combine_close_words(results, time_threshold=1, max_length=20):
+def split_into_words(results):
+    """Split on spaces, then linearly interpolate the timestamps for each word using the length of the word."""
+    new_results = []
+    for i in results:
+        words = i['text'].split()
+        for j in range(len(words)):
+            word = words[j]
+            start = i['start'] + (i['end'] - i['start']) * sum(len(k) for k in words[:j]) / len(i['text'])
+            end = i['start'] + (i['end'] - i['start']) * sum(len(k) for k in words[:j + 1]) / len(i['text'])
+            new_results.append(dict(text=word, start=start, end=end))
+    
+    return new_results
+
+def combine_to_segments(results, time_threshold=1, max_length=20):
     """Combine some word that are close to each other, to form small phrases.
 
     Basically records audio for 1 second, and combine all words in that second. The last word might overflow a bit, 
@@ -65,7 +78,7 @@ def combine_close_words(results, time_threshold=1, max_length=20):
         else:
             # Combine words that are close to each other
             current_end = i['end']
-            current_text += i['text']
+            current_text += " " + i['text']
     
     new_results.append(dict(start=current_start, end=current_end, text=current_text))
     
@@ -75,12 +88,14 @@ def combine_close_words(results, time_threshold=1, max_length=20):
 def transcribe_to_srt(filepath):
     # Load model
     with console.status(f"Loading Whisper 'small' model...", spinner="arc", spinner_style="blue"):
-        model = load_model('medium')
+        model = load_model('small')
     log.success("Loaded Whisper model")
     # Start transcribing
     log.progress(f"Transcribing using Whisper (this may take some time)...")
     results = transcribe_word_level(model, filepath, pbar=True)
     log.success("Completed Whisper")
+    # TODO: cache Whisper output?
+    # TODO: more config options: model, threshold, max_length
     
     # Convert format and combine words
     with console.status(f"Finalizing Whisper results...", spinner="arc", spinner_style="blue"):
@@ -92,9 +107,9 @@ def transcribe_to_srt(filepath):
         #     print(f"[{i['start']:0.2f} - {i['end']:0.2f}] {i['text']}")
         
         # Post processing
-        # TODO: split too long sentences (divide time by length of part in characters, but only split on spaces)
-        results = make_whole_words(results)
-        results = combine_close_words(results, time_threshold=1)
+        results = make_words_whole(results)
+        results = split_into_words(results)
+        results = combine_to_segments(results, time_threshold=1)
         
         srt_filepath = filepath + '.srt'
         to_srt(results, srt_filepath)
