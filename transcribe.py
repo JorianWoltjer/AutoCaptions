@@ -1,7 +1,12 @@
+from hashlib import md5
 from itertools import chain
+import os, sys
 import torch, gc
+import json
 from stable_whisper import load_model, to_srt, transcribe_word_level, finalize_segment_word_ts
 from log import log, console
+
+DIR = sys.path[0]
 
 def add_start_end_times(results):
     # Add last word, one second later
@@ -84,18 +89,41 @@ def combine_to_segments(results, max_time=1, max_length=20):
     
     return new_results
 
+def unique_filename(filepath, model_name):
+    hash = md5(open(filepath, 'rb').read()).hexdigest()
+    return f"{DIR}/cache/{hash}-{model_name}.json"
+
+def get_cache(filepath, model_name):
+    """Check if the Whisper output is cached, and if so, return it."""
+    filepath = unique_filename(filepath, model_name)
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as f:
+            return json.load(f)
+
+def put_cache(filepath, model_name, results):
+    """Cache the Whisper output."""
+    filepath = unique_filename(filepath, model_name)
+    with open(filepath, 'w') as f:
+        json.dump(results, f)
+
 # Convert audio to SRT using Whisper
 def transcribe_to_srt(filepath, model_name='small', max_time=1, max_length=20):
-    # Load model
-    log.progress(f"Loading Whisper {model_name!r} model...")
-    model = load_model(model_name)
-    log.success("Loaded Whisper model")
-    # Start transcribing
-    log.progress(f"Transcribing using Whisper (this may take some time)...")
-    results = transcribe_word_level(model, filepath, pbar=True)
-    log.success("Completed Whisper")
-    # TODO: cache Whisper output?
-    
+    cached = get_cache(filepath, model_name)
+    if cached:
+        results = cached
+        log.success("Loaded CACHED Whisper results!")
+    else:
+        # Load model
+        log.progress(f"Loading Whisper {model_name!r} model...")
+        model = load_model(model_name)
+        log.success("Loaded Whisper model")
+        # Start transcribing
+        log.progress(f"Transcribing using Whisper (this may take some time)...")
+        results = transcribe_word_level(model, filepath, pbar=True)
+        
+        put_cache(filepath, model_name, results)
+        log.success("Completed Whisper (and saved to cache)")
+        
     # Convert format and combine words
     with console.status(f"Finalizing Whisper results...", spinner="arc", spinner_style="blue"):
         # Format
@@ -120,10 +148,11 @@ def transcribe_to_srt(filepath, model_name='small', max_time=1, max_length=20):
     log.success(f"Succesfully transcribed audio!")
     
     # Prevent memory leak
-    del model
-    gc.collect()
-    torch.cuda.empty_cache()
-    if torch.cuda.memory_allocated() > 0:
-        log.warning("WARNING: Memory was not fully cleared. This is a bug! Please report it with some information about your system.")
+    if not cached:
+        del model
+        gc.collect()
+        torch.cuda.empty_cache()
+        if torch.cuda.memory_allocated() > 0:
+            log.warning("WARNING: Memory was not fully cleared. This is a bug! Please report it with some information about your system.")
 
     return srt_filepath

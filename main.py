@@ -73,8 +73,9 @@ def file_save():
     # Open file in Explorer
     if sys.platform == "win32":
         open_file_in_explorer(f)
-        
+    
     feedback_variable.set("Done! Saved to " + outfile)
+    input_file_variable.set("")
 
 # Convert SRT to Premiere Pro XML Sequence as Text Layers
 def srt_to_xml(srt_filename, outfile):
