@@ -1,6 +1,7 @@
 rich
 Jinja2
 pysrt
+sv-ttk
 
 setuptools-rust
 git+https://github.com/openai/whisper.git

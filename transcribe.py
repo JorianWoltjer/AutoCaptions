@@ -1,5 +1,5 @@
 from itertools import chain
-import json
+import torch, gc
 from stable_whisper import load_model, to_srt, transcribe_word_level, finalize_segment_word_ts
 from log import log, console
 
@@ -53,7 +53,7 @@ def split_into_words(results):
     
     return new_results
 
-def combine_to_segments(results, time_threshold=1, max_length=20):
+def combine_to_segments(results, max_time=1, max_length=20):
     """Combine some word that are close to each other, to form small phrases.
 
     Basically records audio for 1 second, and combine all words in that second. The last word might overflow a bit, 
@@ -67,7 +67,7 @@ def combine_to_segments(results, time_threshold=1, max_length=20):
         # If the current word is too far away from the previous word, we start a new phrase
         # If the previous word ends with a punctuation mark, we start a new phrase
         # If the previous phrase is too long, we start a new phrase
-        if i['start'] - current_start > time_threshold or \
+        if i['start'] - current_start > max_time or \
                 current_text[-1] in '.?!' or \
                 len(current_text + i['text']) > max_length:
             # If the current word is too far away from the previous word, we start a new phrase
@@ -85,17 +85,16 @@ def combine_to_segments(results, time_threshold=1, max_length=20):
     return new_results
 
 # Convert audio to SRT using Whisper
-def transcribe_to_srt(filepath):
+def transcribe_to_srt(filepath, model_name='small', max_time=1, max_length=20):
     # Load model
-    with console.status(f"Loading Whisper 'small' model...", spinner="arc", spinner_style="blue"):
-        model = load_model('small')
+    log.progress(f"Loading Whisper {model_name!r} model...")
+    model = load_model(model_name)
     log.success("Loaded Whisper model")
     # Start transcribing
     log.progress(f"Transcribing using Whisper (this may take some time)...")
     results = transcribe_word_level(model, filepath, pbar=True)
     log.success("Completed Whisper")
     # TODO: cache Whisper output?
-    # TODO: more config options: model, threshold, max_length
     
     # Convert format and combine words
     with console.status(f"Finalizing Whisper results...", spinner="arc", spinner_style="blue"):
@@ -109,7 +108,7 @@ def transcribe_to_srt(filepath):
         # Post processing
         results = make_words_whole(results)
         results = split_into_words(results)
-        results = combine_to_segments(results, time_threshold=1)
+        results = combine_to_segments(results, max_time=max_time, max_length=max_length)
         
         srt_filepath = filepath + '.srt'
         to_srt(results, srt_filepath)
@@ -119,5 +118,12 @@ def transcribe_to_srt(filepath):
         print(f"[{i['start']:0.2f} - {i['end']:0.2f}] {i['text']}")
 
     log.success(f"Succesfully transcribed audio!")
+    
+    # Prevent memory leak
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
+    if torch.cuda.memory_allocated() > 0:
+        log.warning("WARNING: Memory was not fully cleared. This is a bug! Please report it with some information about your system.")
 
     return srt_filepath
