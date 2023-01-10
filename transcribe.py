@@ -91,7 +91,8 @@ def combine_to_segments(results, max_time=1, max_length=20):
 
 def unique_filename(filepath, model_name):
     hash = md5(open(filepath, 'rb').read()).hexdigest()
-    return f"{DIR}/cache/{hash}-{model_name}.json"
+    path = os.path.join(DIR, 'cache', f"{hash}-{model_name}.json")
+    return path
 
 def get_cache(filepath, model_name):
     """Check if the Whisper output is cached, and if so, return it."""

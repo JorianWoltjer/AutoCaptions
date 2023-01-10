@@ -10,40 +10,37 @@ Outputs a `.xml` file which is a sequence containing text layers (Essential Grap
 
 ```cmd
 git clone https://github.com/JorianWoltjer/AutoCaptions.git && cd AutoCaptions
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 > **Warning**: The installation is not thoroughly tested, so let me know if any problems arise by creating an [Issue](https://github.com/JorianWoltjer/AutoCaptions/issues) for example. 
 
 ### Torch
 
-Make sure to install the GPU enabled version of `torch` to make Whisper faster:
+Make sure to install the GPU enabled version of `torch` to make Whisper a lot faster:
 
 ```shell
-pip uninstall torch
-pip cache purge
-pip install torch -f https://download.pytorch.org/whl/torch_stable.html
+python -m pip uninstall torch
+python -m pip cache purge
+python -m pip install torch -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 ### ffmpeg
 
 An external dependency for Whisper that needs to be installed:
 
-```shell
-# on Windows using Chocolatey (https://chocolatey.org/)
+###### Windows
+
+Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup), then run the following command:
+
+```cmd
 choco install ffmpeg
+```
 
-# on Windows using Scoop (https://scoop.sh/)
-scoop install ffmpeg
+###### Linux
 
-# on Ubuntu or Debian
+```Shell
 sudo apt update && sudo apt install ffmpeg
-
-# on Arch Linux
-sudo pacman -S ffmpeg
-
-# on MacOS using Homebrew (https://brew.sh/)
-brew install ffmpeg
 ```
 
 ## Running
