@@ -57,13 +57,17 @@ $ python3 main.py
 
 ## Example
 
-Start the batch script, and select a file as input:
+Start the batch script, and select a file as input. Then some configuration is available and you can transcribe the audio:
 
 ![A terminal showing Whisper output and some progress updates, with the simple GUI on Windows](img/terminal_example.png)
 
 The resulting XML file can then be imported into a Premiere project, where you can use and edit the text layers it created:
 
 ![A screenshot of the Premiere Pro timeline showing 3 text layers with the transcribed text](img/premiere_example.png)
+
+> **Tip**: To apply a style to all the text layers, you can create an Essential Graphics preset. Just do your settings on one of the layers, and then save it as a preset. Then you can drag the preset from your Project window to all the layers you select.
+> 
+> For animation keyframes you want to save an Animation Preset, which you can do by right-clicking on your created effect with keyframes and saving the Preset. Then you can drag it from your Effects window under Presets to all the layers you select. 
 
 ## Resources
 
