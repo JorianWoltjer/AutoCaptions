@@ -2,9 +2,11 @@
 
 **Transcribe an audio file to Premiere Pro layers**
 
-A GUI tool that uses [OpenAI's Whisper](https://github.com/openai/whisper) to transcribe text from an audio/video file, into a Premiere Pro sequence to automate the creation of subtitles. Mainly for adding quick subtitles to action-packed video's, by making segments of a small word count. 
+A GUI tool that uses [OpenAI's Whisper](https://github.com/openai/whisper) to transcribe text from an audio/video file, into a Premiere Pro sequence to automate the creation of subtitles. Mainly for adding quick subtitles to action-packed videos, by making segments of a small word count. 
 
 Outputs a `.xml` file which is a sequence containing text layers (Essential Graphics) that can be imported into your Premiere Pro project. 
+
+Uses [`stable-ts`](https://github.com/jianfch/stable-ts) regrouping functions to split the result into small configurable segments. 
 
 ## Installation
 
@@ -12,8 +14,6 @@ Outputs a `.xml` file which is a sequence containing text layers (Essential Grap
 git clone https://github.com/JorianWoltjer/AutoCaptions.git && cd AutoCaptions
 python -m pip install -r requirements.txt
 ```
-
-> **Warning**: The installation is not thoroughly tested, so let me know if any problems arise by creating an [Issue](https://github.com/JorianWoltjer/AutoCaptions/issues) for example. 
 
 ### Torch
 
@@ -52,7 +52,7 @@ Simply create a shortcut to [`start.bat`](start.bat)
 ###### Linux
 
 ```shell
-$ python3 main.py
+$ python main.py
 ```
 
 ## Example
