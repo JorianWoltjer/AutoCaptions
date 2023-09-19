@@ -5,8 +5,7 @@ from log import console, log
 log.progress("Loading modules...")
 
 import tkinter
-from tkinter import ttk
-from tkinter import ACTIVE, DISABLED, filedialog
+from tkinter import ttk, ACTIVE, DISABLED, filedialog
 import sv_ttk
 from pathlib import Path
 import subprocess
@@ -58,14 +57,14 @@ def file_save():
     
     # Get configuration
     config_model = model_variable.get()
-    config_max_time = float(max_time_variable.get())
-    config_max_length = int(max_length_variable.get())
+    config_split_gap = float(split_gap_variable.get())
+    config_split_length = int(split_length_variable.get())
 
     # Transcribe audio using Whisper
     srt_filepath = transcribe_to_srt(input_filepath, 
                                      model_name=config_model,
-                                     max_time=config_max_time,
-                                     max_length=config_max_length)
+                                     split_gap=config_split_gap,
+                                     split_length=config_split_length)
 
     # Convert SRT to Premiere XML text layers
     outfile = srt_to_xml(srt_filepath, f.name)
@@ -119,19 +118,19 @@ model_variable.set("small")
 model_combobox = ttk.Combobox(config_frame, values=["small", "medium", "large"], textvariable=model_variable)
 model_combobox.grid(row=1, column=0)
 
-max_time_label = ttk.Label(config_frame, text="Max time (s)")
-max_time_label.grid(row=0, column=1)
-max_time_variable = tkinter.StringVar(window)
-max_time_variable.set("1.0")
-max_time_spinbox = ttk.Spinbox(config_frame, from_=0, to=5, increment=0.1, textvariable=max_time_variable)
-max_time_spinbox.grid(row=1, column=1)
+split_gap_label = ttk.Label(config_frame, text="Split silence (s)")
+split_gap_label.grid(row=0, column=1)
+split_gap_variable = tkinter.StringVar(window)
+split_gap_variable.set("0.5")
+split_gap_spinbox = ttk.Spinbox(config_frame, from_=0, to=5, increment=0.1, textvariable=split_gap_variable)
+split_gap_spinbox.grid(row=1, column=1)
 
-max_length_label = ttk.Label(config_frame, text="Max characters")
-max_length_label.grid(row=0, column=2)
-max_length_variable = tkinter.StringVar(window)
-max_length_variable.set("20")
-max_length_spinbox = ttk.Spinbox(config_frame, from_=0, to=100, increment=1, textvariable=max_length_variable)
-max_length_spinbox.grid(row=1, column=2)
+split_length_label = ttk.Label(config_frame, text="Split length (chars)")
+split_length_label.grid(row=0, column=2)
+split_length_variable = tkinter.StringVar(window)
+split_length_variable.set("20")
+split_length_spinbox = ttk.Spinbox(config_frame, from_=0, to=100, increment=1, textvariable=split_length_variable)
+split_length_spinbox.grid(row=1, column=2)
 
 for widget in config_frame.winfo_children():
     widget.grid_configure(padx=10, pady=10)
