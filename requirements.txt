@@ -6,3 +6,4 @@ sv-ttk
 setuptools-rust
 openai-whisper
 git+https://github.com/jianfch/stable-ts.git
+faster-whisper
