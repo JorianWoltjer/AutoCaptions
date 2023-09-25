@@ -2,7 +2,7 @@ from hashlib import md5
 import os, sys
 import torch, gc
 import json
-from stable_whisper import load_model, WhisperResult
+from stable_whisper import load_faster_whisper, WhisperResult
 from log import log, console
 
 DIR = sys.path[0]
@@ -35,11 +35,12 @@ def transcribe_to_srt(filepath, model_name='small', split_gap=0.5, split_length=
     else:
         # Load model
         log.progress(f"Loading Whisper {model_name!r} model...")
-        model = load_model(model_name)
+        model = load_faster_whisper(model_name)
         log.success("Loaded Whisper model")
         # Start transcribing
         log.progress(f"Transcribing using Whisper (this may take some time)...")
-        result: WhisperResult = model.transcribe(filepath, regroup=False)
+        # result: WhisperResult = model.transcribe(filepath, regroup=False)
+        result: WhisperResult = model.transcribe_stable(filepath, regroup=False)
         
         put_cache(filepath, model_name, result)
         log.success("Completed Whisper (and saved to cache)")
